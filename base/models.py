@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import signals
 
 class Department(models.Model):
     name = models.CharField(max_length=100)
@@ -25,12 +26,23 @@ class Professor(models.Model):
     def __str__(self):
         return self.name
 
+
+class BranchCode(models.Model):
+    code = models.CharField(max_length = 2)
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+    
+
 class Branch(models.Model):
     name = models.CharField(max_length=100)
     cdc_courses = models.ManyToManyField(Course, related_name='branches', blank=True)
-
+    branch_code = models.ForeignKey(BranchCode,on_delete=models.SET_NULL,null = True,blank = True)
     def __str__(self):
         return self.name
+    
+
+
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -39,6 +51,11 @@ class Student(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        # Assign CDC courses to the student
+        self.courses.set(self.branch.cdc_courses.all())
+        super().save(*args, **kwargs)
     
 class Announcement(models.Model):
     title = models.CharField(max_length=200)
