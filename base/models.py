@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models import signals
+
+
 
 class Department(models.Model):
     name = models.CharField(max_length=100)
@@ -13,7 +14,7 @@ class Course(models.Model):
     name = models.CharField(max_length=100)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='courses')
     course_incharge = models.ForeignKey('Professor', on_delete=models.SET_NULL, null=True, blank=True, related_name='courses_incharge')
-    students = models.ManyToManyField('Student', related_name='courses', blank=True)
+    
 
     def __str__(self):
         return self.name
@@ -41,21 +42,19 @@ class Branch(models.Model):
     def __str__(self):
         return self.name
     
-
-
-
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
+    courses = models.ManyToManyField(Course, related_name='students', blank=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.branch:
+            self.courses.set(self.branch.cdc_courses.all())
 
     def __str__(self):
         return self.name
-    
-    def save(self, *args, **kwargs):
-        # Assign CDC courses to the student
-        self.courses.set(self.branch.cdc_courses.all())
-        super().save(*args, **kwargs)
     
 class Announcement(models.Model):
     title = models.CharField(max_length=200)
