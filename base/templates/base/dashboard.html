@@ -1,0 +1,17 @@
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Dashboard</h1>
+    <h2>Courses:</h2>
+    <ul>
+        {% for course in courses %}
+            <li>{{ course.name }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

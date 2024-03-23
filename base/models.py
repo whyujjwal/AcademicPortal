@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
 
 
@@ -10,10 +11,17 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
+#validator for credit
+    
+def validate_positive_less_than_5(value):
+    if value <= 0 or value >= 5:
+        raise ValidationError("Value must be a positive integer less than 5")
+
 class Course(models.Model):
     name = models.CharField(max_length=100)
     department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='courses')
     course_incharge = models.ForeignKey('Professor', on_delete=models.SET_NULL, null=True, blank=True, related_name='courses_incharge')
+    credit = models.IntegerField(validators=[validate_positive_less_than_5])
     
 
     def __str__(self):
@@ -44,17 +52,21 @@ class Branch(models.Model):
     
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100) #name is student id 
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
-    courses = models.ManyToManyField(Course, related_name='students', blank=True)
+    isregistered = models.BooleanField(default=False)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.branch:
-            self.courses.set(self.branch.cdc_courses.all())
+    
 
     def __str__(self):
         return self.name
+
+class Enrollment(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
+
+    def __str__(self):
+        return f"{self.student.username} - {self.course.name}"
     
 class Announcement(models.Model):
     title = models.CharField(max_length=200)
@@ -81,10 +93,8 @@ GRADE_CHOICES = [
 ]
 
 class Grade(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='grades')
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='grades')
-    grade = models.CharField(max_length=2,choices  = GRADE_CHOICES)
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name='grades')
+    grade = models.CharField(max_length=2, choices=GRADE_CHOICES)
 
     def __str__(self):
-        return f"{self.student.name} - {self.course.name}: {self.grade}"
-    
+        return f"{self.enrollment.student.username} - {self.enrollment.course.name}: {self.grade}"
