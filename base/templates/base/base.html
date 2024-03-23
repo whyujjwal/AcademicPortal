@@ -15,7 +15,11 @@
                 <a href="{% url 'home' %}">Academic Portal</a>
             </div>
             <ul>
+
                 {% if user.is_authenticated %}
+                    {% if not student.isregistered %}
+                        <li>Register for courses</li>
+                    {% endif %}
                 <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
                    
                     <li><a href="{% url 'account_logout' %}">Logout</a></li>

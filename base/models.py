@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
-
+  
 class Department(models.Model):
     name = models.CharField(max_length=100)
     head_of_department = models.ForeignKey('Professor', on_delete=models.SET_NULL, null=True, blank=True, related_name='departments_headed')
@@ -56,14 +56,33 @@ class Student(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
     isregistered = models.BooleanField(default=False)
 
-    
+    def get_student(self):
+        try:
+            return self.student
+        except Student.DoesNotExist:
+            return None
 
     def __str__(self):
         return self.name
 
+#Grades
+GRADE_CHOICES = [
+    ('A', 'A'),
+    ('A-', 'A-'),
+    ('B', 'B'),
+    ('B-', 'B-'),
+    ('C', 'C'),
+    ('C-', 'C-'),
+    ('D', 'D'),
+    ('E', 'E'),
+    ('NC', 'No Credit'),
+]
+
 class Enrollment(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
+    grade = models.CharField(max_length=2, choices=GRADE_CHOICES,null=True,blank = True)
+
 
     def __str__(self):
         return f"{self.student.username} - {self.course.name}"
@@ -79,22 +98,8 @@ class Announcement(models.Model):
     def __str__(self):
         return self.title
 
-#Grades
-GRADE_CHOICES = [
-    ('A', 'A'),
-    ('A-', 'A-'),
-    ('B', 'B'),
-    ('B-', 'B-'),
-    ('C', 'C'),
-    ('C-', 'C-'),
-    ('D', 'D'),
-    ('E', 'E'),
-    ('NC', 'No Credit'),
-]
 
-class Grade(models.Model):
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name='grades')
-    grade = models.CharField(max_length=2, choices=GRADE_CHOICES)
 
-    def __str__(self):
-        return f"{self.enrollment.student.username} - {self.enrollment.course.name}: {self.grade}"
+class Cart(models.Model):
+    user = models.OneToOneField(Student,on_delete = models.CASCADE,related_name = 'cart')
+    
