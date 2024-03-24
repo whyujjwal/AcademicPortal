@@ -1,17 +1,11 @@
-<!-- dashboard.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-</head>
-<body>
-    <h1>Dashboard</h1>
-    <h2>Courses:</h2>
-    <ul>
-        {% for course in courses %}
-            <a href="{% url 'course_detail' course.id %}"><li>{{ course.name }}</li></a>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h1 class="mb-4">Dashboard</h1>
+<h2 class="mb-3">Courses:</h2>
+<ul class="list-group">
+    {% for course in courses %}
+        <a href="{% url 'course_detail' course.id %}" class="list-group-item list-group-item-action">{{ course.name }}</a>
+    {% endfor %}
+</ul>
+{% endblock %}

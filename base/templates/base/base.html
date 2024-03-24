@@ -1,45 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Academic Portal{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    {% block extra_css %}{% endblock %}
-</head>
-<body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="{% url 'home' %}">Academic Portal</a>
-            </div>
-            <ul>
+{% comment %} {% extends 'bootstrap5/bootstrap.html' %} {% endcomment %}
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
 
-                {% if user.is_authenticated %}
-                    {% if not student.isregistered %}
-                        <li>Register for courses</li>
+{% block body %}
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">Academic Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        {% if user.student.isregistered %}
+                            <li class="nav-item">
+                                <a class="nav-link square-link" href="{% url 'dashboard' %}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link square-link" href="{% url 'account_logout' %}">Logout</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link square-link" href="{% url 'register' %}">Register for courses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link square-link" href="{% url 'dashboard' %}">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link square-link" href="{% url 'account_logout' %}">Logout</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link square-link" href="{% url 'account_login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link square-link" href="{% url 'account_signup' %}">Sign Up</a>
+                        </li>
                     {% endif %}
-                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-                   
-                    <li><a href="{% url 'account_logout' %}">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'account_login' %}">Login</a></li>
-                    <li><a href="{% url 'account_signup' %}">Sign Up</a></li>
-                {% endif %} 
-            </ul>
-        </nav>
-    </header>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+<main class="container my-4">
+    {% block content %}{% endblock %}
+</main>
 
-    <footer>
-        <p>&copy; {% now "Y" %} Academic Portal</p>
-    </footer>
+<footer class="bg-dark text-light py-3">
+    <div class="container">
+        <p class="mb-0">&copy; {% now "Y" %} Academic Portal</p>
+    </div>
+</footer>
+{% bootstrap_javascript %}
+{% endblock %}
 
-    <script src="{% static 'js/scripts.js' %}"></script>
-    {% block extra_js %}{% endblock %}
-</body>
-</html>
+{% block extra_css %}
+<style>
+   
+</style>
+{% endblock %}

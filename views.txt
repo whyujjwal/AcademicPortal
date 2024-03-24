@@ -1,22 +1,32 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 from .models import Student, Enrollment, Course, Announcement, Cart
 from django.contrib.auth.models import User
-from django.contrib import messages
 from django.views.generic import ListView, DetailView
+from django.conf import settings
 from django.http import HttpResponse
 
 def Home(response):
-    return render(response,"base/home.html")
+    return render(response,"base/base.html")
+
+
 
 @login_required
 def dashboard(request):
     try:
+       
+        # Retrieve the enrollments for the student
         enrollments = Enrollment.objects.filter(student=request.user)
+        
+        # Extract the courses from the enrollments
         courses = [enrollment.course for enrollment in enrollments]
+        
         return render(request, 'base/dashboard.html', {'courses': courses})
     except Student.DoesNotExist:
+        # Handle the case where the student does not exist
         return render(request, 'student_not_found.html')
+    
 
 class CourseDetailView(DetailView):
     model = Course
@@ -38,6 +48,7 @@ class CourseDetailView(DetailView):
 
         return context
     
+    
 def download_file(request, announcement_id):
     announcement = get_object_or_404(Announcement, id=announcement_id)
     file_path = announcement.files.path
@@ -45,10 +56,14 @@ def download_file(request, announcement_id):
         response = HttpResponse(f.read(), content_type='application/force-download')
         response['Content-Disposition'] = 'attachment; filename=%s' % announcement.files.name
         return response
+    
 
 def register(request):
     user = request.user
     student = user.student
+    # if student.isregistered:
+    #     messages.error(request, "You are already registered.")
+    #     return redirect('dashboard')
   
     branch = student.branch
     branch_cdc_courses = []
@@ -60,6 +75,7 @@ def register(request):
     else:
         all_courses = Course.objects.all()
 
+    # Create a new cart for the student if it doesn't exist
     cart, created = Cart.objects.get_or_create(user=user)
     if created:
         student.cart = cart
@@ -71,55 +87,66 @@ def register(request):
 def cart(request):
     user = request.user
     student = user.student
-   
-    if student.isregistered:
-        messages.error(request, "You are already registered.")
-        return redirect('dashboard')
+    # if student.isregistered:
+    #     messages.error(request, "You are already registered.")
+    #     return redirect('dashboard')
     cart_courses = student.cart.courses.all() if hasattr(student, 'cart') else []
     return render(request, 'base/cart.html', {'cart_courses': cart_courses})
 
 def add_to_cart(request, course_id):
+    # Retrieve the course based on the course_id
     course = Course.objects.get(pk=course_id)
+
+    # Assuming you have a student associated with the request user
     user = request.user
     student = user.student
-    if student.isregistered:
-        messages.error(request, "You are already registered.")
-        return redirect('dashboard')
+
+    # Get or create the cart for the student
     cart, created = Cart.objects.get_or_create(user=user)
     student.cart = cart
     student.save()
+
+    # Add the course to the student's cart
     student.cart.courses.add(course)
+
+    # Redirect back to the register page
     return redirect('register')
 
+   
+    return redirect('register')  
+
 def remove_from_cart(request, course_id):
+    # Retrieve the course based on the course_id
     course = get_object_or_404(Course, pk=course_id)
+
+    # Assuming you have a student associated with the request user
     user = request.user
     student = user.student
-    if student.isregistered:
-        messages.error(request, "You are already registered.")
-        return redirect('dashboard')
-    student = user.student
+
+    # Remove the course from the student's cart
     student.cart.courses.remove(course)
-    return redirect('register')
+
+    # Redirect back to the cart page or another page
+    return redirect('register')  # Change 'cart' to the appropriate URL name for the cart page
 
 def save_cart(request):
     user = request.user
+
+    # if student.isregistered:
+    #     messages.error(request, "You are already registered.")
+    #     return redirect('dashboard')
+   
     cart_courses = user.cart.courses.all() if hasattr(user, 'cart') else []
-    student = user.student
-    if student.isregistered:
-        messages.error(request, "You are already registered.")
-        return redirect('dashboard')
+
+    # Create an enrollment for each course in the cart
     for course in cart_courses:
         Enrollment.objects.create(student=user, course=course)
-    
-    student.isregistered = True
+        
+    # Set isregistered to True
+   
     user.save()
-    student.save()
+
+    # Clear the cart
     user.cart.courses.clear()
+
     return redirect('home')
-
-
-
-def cgpa_calculator(request):
-    
-    return render(request, 'cgpa_calculator.html', {'cgpa': 0.0})

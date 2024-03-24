@@ -1,39 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ course.name }}</title>
-</head>
-<body>
-    <h1>{{ course.name }}</h1>
-    <p>Department: {{ course.department.name }}</p>
-    <p>Course Incharge: {{ course.course_incharge.name }}</p>
-    <p>Credit: {{ course.credit }}</p>
+{% extends 'base/base.html' %}
+
+{% block content %}
+<h1 class="mb-4">{{ course.name }}</h1>
+<div class="mb-4">
+    <p><strong>Department:</strong> {{ course.department.name }}</p>
+    <p><strong>Course Incharge:</strong> {{ course.course_incharge.name }}</p>
+    <p><strong>Credit:</strong> {{ course.credit }}</p>
 
     {% if enrollment %}
-        <p>Grade: {{ enrollment.grade }}</p>
+        <p><strong>Grade:</strong> {{ enrollment.grade }}</p>
     {% else %}
         <p>You are not enrolled in this course.</p>
     {% endif %}
+</div>
 
-    <h2>Announcements</h2>
-    {% if announcements %}
-        <ul>
-            {% for announcement in announcements %}
-                <li>
-                    <h3>{{ announcement.title }}</h3>
-                    <p>{{ announcement.content }}</p>    
-                    {% if announcement.files %}
-                    <a href="{% url 'download_file' announcement.id %}">Download File</a>
-                    {% endif %}
-                    <p>Created by: {{ announcement.created_by.name }}</p>
-                    <p>Created at: {{ announcement.created_at }}</p>
-                    
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No announcements available.</p>
-    {% endif %}
-</body>
-</html>
+<h2 class="mb-3">Announcements</h2>
+{% if announcements %}
+    <ul class="list-group">
+        {% for announcement in announcements %}
+            <li class="list-group-item">
+                <h3>{{ announcement.title }}</h3>
+                <p>{{ announcement.content }}</p>
+                {% if announcement.files %}
+                    <a href="{% url 'download_file' announcement.id %}" class="btn btn-primary btn-sm">Download File</a>
+                {% endif %}
+                <p><strong>Created by:</strong> {{ announcement.created_by.name }}</p>
+                <p><strong>Created at:</strong> {{ announcement.created_at }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No announcements available.</p>
+{% endif %}
+{% endblock %}

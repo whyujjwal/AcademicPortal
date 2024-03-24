@@ -55,6 +55,7 @@ class Student(models.Model):
     name = models.CharField(max_length=100) #name is student id 
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
     isregistered = models.BooleanField(default=False)
+    cart = models.OneToOneField('Cart', on_delete=models.CASCADE, null=True, blank=True)
 
     def get_student(self):
         try:
@@ -101,5 +102,8 @@ class Announcement(models.Model):
 
 
 class Cart(models.Model):
-    user = models.OneToOneField(Student,on_delete = models.CASCADE,related_name = 'cart')
-    
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    courses = models.ManyToManyField(Course, related_name='carts')
+
+    def __str__(self):
+        return f"Cart for {self.user.username}"

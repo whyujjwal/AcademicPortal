@@ -1,0 +1,9 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container text-center my-5">
+    <h1 class="mb-4">Welcome to the Academic Portal</h1>
+    <p class="lead">Manage your courses, grades, and more.</p>
+    <a href="{% url 'cgpa_calculator' %}" class="btn btn-primary btn-lg">CGPA Calculator</a>
+</div>
+{% endblock %}
