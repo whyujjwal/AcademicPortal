@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ course.name }}</title>
+</head>
+<body>
+    <h1>{{ course.name }}</h1>
+    <p>Department: {{ course.department.name }}</p>
+    <p>Course Incharge: {{ course.course_incharge.name }}</p>
+    <p>Credit: {{ course.credit }}</p>
+
+    {% if enrollment %}
+        <p>Grade: {{ enrollment.grade }}</p>
+    {% else %}
+        <p>You are not enrolled in this course.</p>
+    {% endif %}
+
+    <h2>Announcements</h2>
+    {% if announcements %}
+        <ul>
+            {% for announcement in announcements %}
+                <li>
+                    <h3>{{ announcement.title }}</h3>
+                    <p>{{ announcement.content }}</p>    
+                    {% if announcement.files %}
+                    <a href="{% url 'download_file' announcement.id %}">Download File</a>
+                    {% endif %}
+                    <p>Created by: {{ announcement.created_by.name }}</p>
+                    <p>Created at: {{ announcement.created_at }}</p>
+                    
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No announcements available.</p>
+    {% endif %}
+</body>
+</html>
