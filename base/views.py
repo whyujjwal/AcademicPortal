@@ -51,7 +51,7 @@ def register(request):
     student = user.student
   
     branch = student.branch
-    branch_cdc_courses = []
+    branch_cdc_courses = []#try to add branch befroe registering the student
     if branch:
         branch_cdc_courses = branch.cdc_courses.all()
 
@@ -118,24 +118,80 @@ def save_cart(request):
     user.cart.courses.clear()
     return redirect('home')
 
-
+def create_dummy_enrollments(user):
+    
+    enrollments = Enrollment.objects.filter(student=user)
+    for enrollment in enrollments:
+        DummyEnrollment.objects.create(
+            student=enrollment.student,
+            course=enrollment.course,
+            grade=None  
+        )
+    
 @login_required
 def cgpa_calculator(request):
-
+   
     user = request.user
-    dummy_enrollments = DummyEnrollment.objects.filter(student=user)
-
-    # Pass the dummy enrollments and grade choices to the template
-    context = {
-        'dummy_enrollments': dummy_enrollments,
-        'grade_choices': GRADE_CHOICES,
-    }
+    if not DummyEnrollment.objects.filter(student=user).exists():
+        create_dummy_enrollments(user)
 
     
-    return render(request, 'base/cgpa_calculator.html', {'cgpa': 0.0})
+    dummy_enrollments = DummyEnrollment.objects.filter(student=user)
+    grade_choices = [
+        ('A', 'A'), ('A-', 'A-'), ('B', 'B'), ('B-', 'B-'),
+        ('C', 'C'), ('C-', 'C-'), ('D', 'D'), ('E', 'E'), ('NC', 'No Credit')
+    ]
 
+    context = {
+        'dummy_enrollments': dummy_enrollments,
+        'grade_choices': grade_choices,
+    }
+
+    return render(request, 'base/cgpa_calculator.html', context)
+
+def get_grade_value(grade):
+    grade_values = {
+        'A': 10.0, 'A-': 9.0, 'B': 8.0, 'B-': 7.0,
+        'C': 6.0, 'C-': 5.0, 'D': 4.0, 'E': 2.0, 'NC': 0.0
+    }
+    return grade_values.get(grade, 0.0)
 
 
 def calculate_cgpa(request):
-    return HttpResponse("hi")
+    if request.method == 'POST':
+        user = request.user
+        dummy_enrollments = DummyEnrollment.objects.filter(student=user)
+        total_points = 0.0
+        total_credit_hours = 0
 
+        for dummy_enrollment in dummy_enrollments:
+            grade = request.POST.get(f'grades[{dummy_enrollment.id}]')
+            if grade and grade != 'NC':  # Exclude courses with 'No Credit'
+                course = dummy_enrollment.course
+                credit_hours = course.credit
+                grade_value = get_grade_value(grade)
+                total_points += credit_hours * grade_value
+                total_credit_hours += credit_hours
+
+        if total_credit_hours > 0:
+            cgpa = total_points / total_credit_hours
+        else:
+            cgpa = 0.0
+
+        dummy_enrollments = DummyEnrollment.objects.filter(student=user)
+        grade_choices = [
+            ('A', 'A'), ('A-', 'A-'), ('B', 'B'), ('B-', 'B-'),
+            ('C', 'C'), ('C-', 'C-'), ('D', 'D'), ('E', 'E'), ('NC', 'No Credit')
+        ]
+
+        context = {
+            'dummy_enrollments': dummy_enrollments,
+            'grade_choices': grade_choices,
+            'cgpa': cgpa,
+        }
+
+        messages.success(request, f'CGPA calculated: {cgpa:.2f}')
+        return render(request, 'base/cgpa_calculator.html', context)
+
+    else:
+        return redirect('cgpa_calculator')

@@ -118,5 +118,7 @@ class DummyEnrollment(models.Model):
         return f"{self.student.username} - {self.course.name}: {self.grade}"
 
 
-# class Evals(models.Model):
-#     pass
+class Evals(models.Model):
+    enrollment = models.ForeignKey(Enrollment,on_delete=models.CASCADE)
+    marks = models.DecimalField(max_digits=4, decimal_places=2)
+    name = models.CharField(max_length=50)
