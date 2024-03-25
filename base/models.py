@@ -120,5 +120,5 @@ class DummyEnrollment(models.Model):
 
 class Evals(models.Model):
     enrollment = models.ForeignKey(Enrollment,on_delete=models.CASCADE)
-    marks = models.DecimalField(max_digits=4, decimal_places=2)
+    marks = models.DecimalField(max_digits=4, decimal_places=2,null = True,blank = True)
     name = models.CharField(max_length=50)
