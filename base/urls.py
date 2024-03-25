@@ -16,5 +16,6 @@ urlpatterns = [
     path('add_to_cart/<int:course_id>/', views.add_to_cart, name='add_to_cart'),
     path('remove_from_cart/<int:course_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('cgpa-calculator/', views.cgpa_calculator, name='cgpa_calculator'),
+    path('cgpa-calculator/calculate/', views.calculate_cgpa, name='calculate_cgpa'),
 ]
 

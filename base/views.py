@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Student, Enrollment, Course, Announcement, Cart
+from .models import *
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.views.generic import ListView, DetailView
@@ -119,7 +119,23 @@ def save_cart(request):
     return redirect('home')
 
 
-
+@login_required
 def cgpa_calculator(request):
+
+    user = request.user
+    dummy_enrollments = DummyEnrollment.objects.filter(student=user)
+
+    # Pass the dummy enrollments and grade choices to the template
+    context = {
+        'dummy_enrollments': dummy_enrollments,
+        'grade_choices': GRADE_CHOICES,
+    }
+
     
-    return render(request, 'cgpa_calculator.html', {'cgpa': 0.0})
+    return render(request, 'base/cgpa_calculator.html', {'cgpa': 0.0})
+
+
+
+def calculate_cgpa(request):
+    return HttpResponse("hi")
+

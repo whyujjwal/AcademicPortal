@@ -107,3 +107,16 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"Cart for {self.user.username}"
+    
+
+class DummyEnrollment(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    grade = models.CharField(max_length=2, choices=GRADE_CHOICES, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.student.username} - {self.course.name}: {self.grade}"
+
+
+# class Evals(models.Model):
+#     pass

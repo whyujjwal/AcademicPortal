@@ -1,0 +1,32 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4 text-center">CGPA Calculator</h1>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <form method="post" action="{% url 'calculate_cgpa' %}">
+                {% csrf_token %}
+                {% for enrollment in dummy_enrollments %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ enrollment.course.name }}</h5>
+                        <div class="form-group">
+                            <label for="grade_{{ enrollment.id }}">Grade:</label>
+                            <select class="form-control" id="grade_{{ enrollment.id }}" name="grades[{{ enrollment.id }}]">
+                                {% for grade_choice in grade_choices %}
+                                <option value="{{ grade_choice.0 }}" {% if enrollment.grade == grade_choice.0 %}selected{% endif %}>{{ grade_choice.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Calculate CGPA</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
