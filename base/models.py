@@ -117,8 +117,18 @@ class DummyEnrollment(models.Model):
     def __str__(self):
         return f"{self.student.username} - {self.course.name}: {self.grade}"
 
+class Eval(models.Model):
+    name = models.CharField(max_length=100)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='evals')
+    max_marks = models.IntegerField()
 
-class Evals(models.Model):
-    enrollment = models.ForeignKey(Enrollment,on_delete=models.CASCADE)
-    marks = models.DecimalField(max_digits=4, decimal_places=2,null = True,blank = True)
-    name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.name
+
+class EvalMarks(models.Model):
+    eval = models.ForeignKey(Eval, on_delete=models.CASCADE, related_name='eval_marks')
+    student = models.ForeignKey(User, on_delete=models.CASCADE,null = True)
+    marks = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.student.username} - {self.eval.name}: {self.marks}"

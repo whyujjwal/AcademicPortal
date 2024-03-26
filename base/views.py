@@ -17,6 +17,7 @@ def dashboard(request):
         return render(request, 'base/dashboard.html', {'courses': courses})
     except Student.DoesNotExist:
         return render(request, 'student_not_found.html')
+    
 
 class CourseDetailView(DetailView):
     model = Course
@@ -28,16 +29,35 @@ class CourseDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         course = self.get_object()
         context['announcements'] = Announcement.objects.filter(course=course)
+        context['evals'] = Eval.objects.filter(course=course)
         
-        student = self.request.user.student
+        student = self.request.user
         try:
-            enrollment = Enrollment.objects.get(student=self.request.user, course=course)
-            context['enrollment'] = enrollment
-        except Enrollment.DoesNotExist:
-            context['enrollment'] = None
+            eval_marks = EvalMarks.objects.filter(student=student, eval__course=course)
+            context['eval_marks'] = eval_marks
+        except EvalMarks.DoesNotExist:
+            context['eval_marks'] = None
+        
 
         return context
     
+
+class EvalListView(ListView):
+    model = Eval
+    template_name = 'base/evals.html'
+    context_object_name = 'evaluations'
+
+    def get_queryset(self):
+        course_id = self.kwargs['course_id']
+        return Eval.objects.filter(course__id=course_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        course_id = self.kwargs['course_id']
+        context['course'] = Course.objects.get(id=course_id)
+        return context
+    
+
 def download_file(request, announcement_id):
     announcement = get_object_or_404(Announcement, id=announcement_id)
     file_path = announcement.files.path

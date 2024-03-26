@@ -1,0 +1,37 @@
+{% extends 'base/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<h1 class="mb-4">Evaluations for {{ course.name }}</h1>
+
+{% if evals %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Evaluation</th>
+                <th>Marks Obtained</th>
+                <th>Maximum Marks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for eval in evals %}
+            <tr>
+                <td>{{ eval.name }}</td>
+                {% with eval_mark=eval_marks|get_eval_mark:eval.id %}
+                    <td>
+                        {% if eval_mark %}
+                            {{ eval_mark.marks }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ eval.max_marks }}</td>
+                {% endwith %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No evaluations available for this course.</p>
+{% endif %}
+{% endblock %}

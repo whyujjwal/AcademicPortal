@@ -17,6 +17,7 @@ urlpatterns = [
     path('remove_from_cart/<int:course_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('cgpa-calculator/', views.cgpa_calculator, name='cgpa_calculator'),
     path('calculate-cgpa/', views.calculate_cgpa, name='calculate_cgpa'),
+    path('course/<int:course_id>/evals/', views.EvalListView.as_view(), name='evals'),
     
 ]
 
