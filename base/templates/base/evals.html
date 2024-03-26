@@ -4,7 +4,7 @@
 {% block content %}
 <h1 class="mb-4">Evaluations for {{ course.name }}</h1>
 
-{% if evals %}
+{% if evaluations %}
     <table class="table">
         <thead>
             <tr>
@@ -14,19 +14,17 @@
             </tr>
         </thead>
         <tbody>
-            {% for eval in evals %}
+            {% for eval in evaluations %}
             <tr>
                 <td>{{ eval.name }}</td>
-                {% with eval_mark=eval_marks|get_eval_mark:eval.id %}
-                    <td>
-                        {% if eval_mark %}
-                            {{ eval_mark.marks }}
-                        {% else %}
-                            N/A
-                        {% endif %}
-                    </td>
-                    <td>{{ eval.max_marks }}</td>
-                {% endwith %}
+                {% with eval_mark=eval_marks|get_eval_mark:request.user.id %}
+                {% if eval_mark %}
+                    <td>{{ eval_mark.marks }}</td>
+                {% else %}
+                    <td>N/A</td>
+                {% endif %}
+            {% endwith %}
+                <td>{{ eval.max_marks }}</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -32,15 +32,8 @@ class CourseDetailView(DetailView):
         context['evals'] = Eval.objects.filter(course=course)
         
         student = self.request.user
-        try:
-            eval_marks = EvalMarks.objects.filter(student=student, eval__course=course)
-            context['eval_marks'] = eval_marks
-        except EvalMarks.DoesNotExist:
-            context['eval_marks'] = None
-        
 
         return context
-    
 
 class EvalListView(ListView):
     model = Eval
@@ -54,8 +47,13 @@ class EvalListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         course_id = self.kwargs['course_id']
-        context['course'] = Course.objects.get(id=course_id)
+        course = get_object_or_404(Course, id=course_id)
+        eval_marks = EvalMarks.objects.filter(enrollment__student=self.request.user, eval__course=course)
+        eval_marks_dict = {eval_mark.eval_id: eval_mark for eval_mark in eval_marks}
+        context['course'] = course
+        context['eval_marks'] = eval_marks_dict
         return context
+
     
 
 def download_file(request, announcement_id):

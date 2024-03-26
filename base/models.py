@@ -127,8 +127,11 @@ class Eval(models.Model):
 
 class EvalMarks(models.Model):
     eval = models.ForeignKey(Eval, on_delete=models.CASCADE, related_name='eval_marks')
-    student = models.ForeignKey(User, on_delete=models.CASCADE,null = True)
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)  
     marks = models.IntegerField()
 
+    class Meta:
+        unique_together = [['eval', 'enrollment']]
+
     def __str__(self):
-        return f"{self.student.username} - {self.eval.name}: {self.marks}"
+        return f"Enrollment: {self.enrollment}, Evaluation: {self.eval.name}, Marks: {self.marks}"
