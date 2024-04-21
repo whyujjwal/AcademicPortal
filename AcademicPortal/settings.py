@@ -182,7 +182,6 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SOCIALACCOUNT_ADAPTER = 'base.adapters.CustomSocialAccountAdapter'
-DEFAULT_SOCIALACCOUNT_ADAPTER = 'base.adapters.CustomSocialAccountAdapter'
 
 
 LOGIN_REDIRECT_URL = '/'

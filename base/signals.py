@@ -19,5 +19,5 @@ def send_announcement_notifications(sender, instance, created, **kwargs):
 
         recipient_list = [student.user.email for student in students]
         subject = 'New Announcement: {}'.format(instance.title)
-        message = 'Dear student,\n\nA new announcement "{}" has been posted. Please check it out.\n\nRegards,\nYour School'.format(instance.title)
+        message = 'Dear student,\n\nA new announcement "{}" has been posted. Please check it out.\n\nRegards,\Professor '.format(instance.title)
         send_announcement_email(subject, message, recipient_list)

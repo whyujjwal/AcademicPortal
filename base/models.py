@@ -51,8 +51,8 @@ class Branch(models.Model):
         return self.name
     
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100) #name is student id 
+    user = models.OneToOneField(User, on_delete=models.CASCADE,)
+    name = models.CharField(max_length=100, default="")
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True, related_name='students')
     isregistered = models.BooleanField(default=False)
     cart = models.OneToOneField('Cart', on_delete=models.CASCADE, null=True, blank=True)
@@ -80,13 +80,14 @@ GRADE_CHOICES = [
 ]
 
 class Enrollment(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
     grade = models.CharField(max_length=2, choices=GRADE_CHOICES,null=True,blank = True)
 
 
+    
     def __str__(self):
-        return f"{self.student.username} - {self.course.name}"
+        return f"{self.student.name} - {self.course.name}"
     
 class Announcement(models.Model):
     title = models.CharField(max_length=200)
@@ -100,22 +101,21 @@ class Announcement(models.Model):
         return self.title
 
 
-
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cart')
+    user = models.OneToOneField(Student, on_delete=models.CASCADE, related_name='user_cart')
     courses = models.ManyToManyField(Course, related_name='carts')
 
     def __str__(self):
-        return f"Cart for {self.user.username}"
+        return f"Cart for {self.user.name}"
     
 
 class DummyEnrollment(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     grade = models.CharField(max_length=2, choices=GRADE_CHOICES, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.student.username} - {self.course.name}: {self.grade}"
+        return f"{self.student.name} - {self.course.name}: {self.grade}"
 
 class Eval(models.Model):
     name = models.CharField(max_length=100)
