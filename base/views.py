@@ -201,6 +201,7 @@ def get_grade_value(grade):
     grade_values = {'A': 10.0, 'A-': 9.0, 'B': 8.0, 'B-': 7.0, 'C': 6.0, 'C-': 5.0, 'D': 4.0, 'E': 2.0, 'NC': 0.0}
     return grade_values.get(grade, 0.0)
 
+
 @login_required
 def calculate_cgpa(request):
     if request.method == 'POST':
@@ -209,7 +210,7 @@ def calculate_cgpa(request):
             dummy_enrollments = DummyEnrollment.objects.filter(student=student)
             total_points = 0.0
             total_credit_hours = 0
-           
+            
             for dummy_enrollment in dummy_enrollments:
                 grade = request.POST.get(f'grades[{dummy_enrollment.id}]')
                 if grade and grade != 'NC': 
@@ -221,14 +222,14 @@ def calculate_cgpa(request):
             
             if total_credit_hours > 0:
                 cgpa = total_points / total_credit_hours
-                cgpa = "{:.2f}".format(cgpa)
+                cgpa_formatted = "{:.2f}".format(cgpa)
             else:
-                cgpa = 0.0
-        
+                cgpa_formatted = "0.00"
+            
             dummy_enrollments = DummyEnrollment.objects.filter(student=student)
             grade_choices = [('A', 'A'), ('A-', 'A-'), ('B', 'B'), ('B-', 'B-'), ('C', 'C'), ('C-', 'C-'), ('D', 'D'), ('E', 'E'), ('NC', 'No Credit')]
-            context = {'dummy_enrollments': dummy_enrollments, 'grade_choices': grade_choices, 'cgpa': cgpa}
-            messages.success(request, f'CGPA calculated: {cgpa:.2f}')
+            context = {'dummy_enrollments': dummy_enrollments, 'grade_choices': grade_choices, 'cgpa': cgpa_formatted}
+            messages.success(request, 'CGPA calculated: {:.2f}'.format(cgpa))
             return render(request, 'base/cgpa_calculator.html', context)
         except Http404:
             messages.error(request, "Student record not found.")
@@ -238,3 +239,4 @@ def calculate_cgpa(request):
             return redirect('cgpa_calculator')
     else:
         return redirect('cgpa_calculator')
+
