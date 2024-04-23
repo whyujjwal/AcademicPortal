@@ -1,8 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .decorators import professor_required
-from base.models import Announcement, Course
+from base.models import Announcement, Course, Student
+from .forms import StudentSearchForm
+
+
 
 def professor_login(request):
     if request.method == 'POST':
@@ -38,9 +41,28 @@ def my_courses(request):
 
 @professor_required
 def course_detail(request, course_id):
-    course = Course.objects.filter(id=course_id)
+    try:
+        course = Course.objects.get(id=course_id)
+    except Course.DoesNotExist:
+        raise Http404("Course does not exist")
+    
     return render(request, 'professor_portal/course_detail.html', {'course': course})
-  
+
+
+def add_student_to_course(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if request.method == 'POST':
+        form = StudentSearchForm(request.POST)
+        if form.is_valid():
+            # Get the search query from the form
+            search_query = form.cleaned_data['search_query']
+            # Perform a search for students based on the query
+            students = Student.objects.filter(name__icontains=search_query)
+            # Pass the search results to the template for display
+            return render(request, 'professor_portal/add_student_to_course.html', {'course': course, 'students': students})
+    else:
+        form = StudentSearchForm()
+    return render(request, 'professor_portal/add_student_to_course.html', {'course': course, 'form': form})
 
  
 @login_required
@@ -62,13 +84,13 @@ def create_announcement(request, course_id):
             title=title,
             content=content,
             course=course,
-            created_by=request.user.professor  # Assuming each announcement is created by a professor
+            created_by=request.user.professor  
         )
         
         for file in files:
             announcement.files.create(file=file)
             
-        return redirect('professor_dashboard')  # Redirect to dashboard after creating announcement
+        return redirect('professor_dashboard')  
     else:
         course = Course.objects.get(id=course_id)
         return render(request, 'professor_portal/create_announcement.html', {'course': course})

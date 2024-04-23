@@ -1,0 +1,16 @@
+{% extends 'professor_portal/prof_base.html' %}
+{% block title %}Add Student to Course{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Add Student to Course</h1>
+    <form method="post">
+        {% csrf_token %}
+        <!-- Add form fields for searching and adding students -->
+        <label for="student_search">Search Student:</label>
+        <input type="text" id="student_search" name="student_search">
+        <button type="submit">Search</button>
+        <!-- Display search results and allow selection -->
+    </form>
+</div>
+{% endblock %}

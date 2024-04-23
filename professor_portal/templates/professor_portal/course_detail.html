@@ -4,12 +4,21 @@
 {% block content %}
 <div class="container">
     <h1>{{ course.name }}</h1>
-    <p>Course: {{ course.name }}</p>
     <p>Instructor: {{ course.course_incharge.name }}</p>
-    <p>Department:{{course.department.name}}</p>
-    <p>Credit:{{course.credit}}</p>
-    <ul></ul>
-
-   
+    <p>Department: {{ course.department.name }}</p>
+    <p>Credit: {{ course.credit }}</p>
+    
+    <h2>Enrolled Students:</h2>
+    <ul>
+        {% for student in enrolled_students %}
+            <li>{{ student.name }}</li>
+        {% empty %}
+            <li>No enrolled students yet.</li>
+        {% endfor %}
+    </ul>
+    
+    <a href="{% url 'add_student_to_course' course.id %}" class="btn btn-primary">Add Student</a>
+  
+    <a href="{% url 'create_announcement' course.id %}" class="btn btn-primary">Make Announcement</a>
 </div>
 {% endblock %}
