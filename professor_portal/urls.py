@@ -1,8 +1,9 @@
-# professor_portal/urls.py
 from django.urls import path
-from django.contrib.auth.views import LoginView
-from .admin import professor_admin_site
+from . import views
 
 urlpatterns = [
-    path('login/', professor_admin_site.urls),
+    path('login/', views.professor_login, name='professor_login'),
+    path('dashboard/', views.professor_dashboard, name='professor_dashboard'),
+    path('logout/', views.professor_logout, name='professor_logout'),
+    path('announcement/create/<int:course_id>/', views.create_announcement, name='create_announcement'),
 ]

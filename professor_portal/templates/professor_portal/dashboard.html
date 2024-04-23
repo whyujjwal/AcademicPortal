@@ -1,0 +1,14 @@
+{% extends 'professor_portal/prof_base.html' %}
+{% block title %}Professor Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome, {{ request.user.username }}</h1>
+    <h2>Courses:</h2>
+    <ul>
+        {% for course in courses %}
+            <li>{{ course.name }} - <a href="{% url 'create_announcement' course.id %}">Create Announcement</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

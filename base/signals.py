@@ -21,3 +21,21 @@ def send_announcement_notifications(sender, instance, created, **kwargs):
         subject = 'New Announcement: {}'.format(instance.title)
         message = 'Dear student,\n\nA new announcement "{}" has been posted. Please check it out.\n\nRegards,\Professor '.format(instance.title)
         send_announcement_email(subject, message, recipient_list)
+
+
+
+#incase adapters doesn't works 
+ 
+# @receiver(post_save, sender=User)
+# def create_student_profile(sender, instance, created, **kwargs):
+#     if created:
+#         try:
+#             # Check if the user was created via Google authentication
+#             social_account = SocialAccount.objects.get(user=instance, provider='google')
+#             if social_account:
+#                 # Extract name from email
+#                 email_parts = instance.email.split('@')
+#                 name = email_parts[0]
+#                 Student.objects.create(user=instance, name=name)
+#         except SocialAccount.DoesNotExist:
+#             pass
