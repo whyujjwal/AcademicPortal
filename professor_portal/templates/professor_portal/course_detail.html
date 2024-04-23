@@ -1,0 +1,15 @@
+{% extends 'professor_portal/prof_base.html' %}
+{% block title %}Course Detail - {{ course.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ course.name }}</h1>
+    <p>Course: {{ course.name }}</p>
+    <p>Instructor: {{ course.course_incharge.name }}</p>
+    <p>Department:{{course.department.name}}</p>
+    <p>Credit:{{course.credit}}</p>
+    <ul></ul>
+
+   
+</div>
+{% endblock %}

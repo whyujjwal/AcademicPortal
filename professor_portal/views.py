@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .decorators import professor_required
-from base.models import Announcement
+from base.models import Announcement, Course
 
 def professor_login(request):
     if request.method == 'POST':
@@ -27,11 +27,26 @@ def professor_logout(request):
 @login_required
 @professor_required
 def professor_dashboard(request):
-   
-    return render(request, 'professor_portal/dashboard.html')
+    courses = Course.objects.filter(course_incharge=request.user.professor)
+    return render(request, 'professor_portal/dashboard.html', {'courses': courses})
+
+@login_required
+@professor_required
+def my_courses(request):
+    courses = Course.objects.filter(course_incharge=request.user.professor)
+    return render(request, 'professor_portal/my_courses.html', {'courses': courses})
+
+@professor_required
+def course_detail(request, course_id):
+    course = Course.objects.filter(id=course_id)
+    return render(request, 'professor_portal/course_detail.html', {'course': course})
+  
 
  
-
+@login_required
+@professor_required
+def announcement_view(request):
+    return render(request,'professor_portal/create_announcement.html')
 
 @login_required
 @professor_required

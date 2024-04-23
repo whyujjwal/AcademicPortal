@@ -1,0 +1,13 @@
+{% extends 'professor_portal/prof_base.html' %}
+{% block title %}My Courses{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>My Courses</h1>
+    {% for course in courses %}
+    <div>
+        <h2><a href="{% url 'course_details_prof' course.id %}">{{ course.name }}</a></h2>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
