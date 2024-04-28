@@ -18,7 +18,8 @@
     </ul>
     
     <a href="{% url 'add_student_to_course' course.id %}" class="btn btn-primary">Add Student</a>
-  
     <a href="{% url 'create_announcement' course.id %}" class="btn btn-primary">Make Announcement</a>
+    <a href="{% url 'create_eval' course.id %}" class="btn btn-primary">Create Evaluation</a>
+
 </div>
 {% endblock %}

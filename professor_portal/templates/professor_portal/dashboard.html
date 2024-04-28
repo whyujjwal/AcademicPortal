@@ -1,12 +1,13 @@
 {% extends 'professor_portal/prof_base.html' %}
+
 {% block title %}Professor Dashboard{% endblock %}
 
 {% block content %}
 <div class="container">
     <h1>Welcome, {{ request.user.username }}</h1>
-    <ul>
-        <li><a href="{% url 'my_courses' %}">My Courses</a></li>
+    <ul class="list-group">
+        <li class="list-group-item"><a href="{% url 'my_courses' %}" class="btn btn-primary">My Courses</a></li>
+        <li class="list-group-item"><a href="{% url 'add_course' %}" class="btn btn-primary">Add Course</a></li>
     </ul>
-    
 </div>
 {% endblock %}

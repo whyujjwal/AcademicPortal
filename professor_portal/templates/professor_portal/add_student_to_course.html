@@ -3,14 +3,40 @@
 
 {% block content %}
 <div class="container">
-    <h1>Add Student to Course</h1>
+    <div class="row">
+        <div class="col">
+            <h1>Add Student to Course</h1>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'add_student_cart'  course_id=course_id %}" class="btn btn-primary">View Cart</a>
+        </div>
+    </div>
     <form method="post">
         {% csrf_token %}
-        <!-- Add form fields for searching and adding students -->
-        <label for="student_search">Search Student:</label>
-        <input type="text" id="student_search" name="student_search">
-        <button type="submit">Search</button>
-        <!-- Display search results and allow selection -->
+        <div class="mb-3">
+            <label for="searchInput" class="form-label">Search Students:</label>
+            <input type="text" class="form-control" id="searchInput" name="search_query" placeholder="Enter student name...">
+            <button type="submit" class="btn btn-primary mt-3">Search</button>
+        </div>
     </form>
+    
+    <hr>
+    
+    <h2>Search Results:</h2>
+    <ul class="list-group">
+        {% if students %}
+            {% for student in students %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ student.name }}</span>
+                    <form method="post" action="{% url 'add_student_process' course_id=course.id student_id=student.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Add Student</button>
+                    </form>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item">No students found.</li>
+        {% endif %}
+    </ul>
 </div>
 {% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'professor_portal/prof_base.html' %}
+{% block title %}Added Students Cart{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Added Students Cart</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Student Name</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cart_item in cart_items %}
+            <tr>
+                <td>{{ cart_item.student.name }}</td>
+                <td>
+                    <form method="post" action="{% url 'remove_student_from_cart' course_id=cart_item.course.id cart_item_id=cart_item.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="mt-3">
+        <form method = "post" action ="{% url 'add_students_to_course' course_id=course_id %}">
+            {% csrf_token %}
+            <button type = "submit" class = "btn btn-primary">
+            Add Students to Course
+            </button>
+        </form>
+    </br>
+        <a href="{% url 'add_student_to_course' course_id=course_id %}" class="btn btn-primary">Return</a>
+    </div>
+</div>
+{% endblock %}

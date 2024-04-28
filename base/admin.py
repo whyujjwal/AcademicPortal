@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import *
-
+from professor_portal.models import *
 
 
 admin.site.register(Department)
@@ -14,3 +14,4 @@ admin.site.register(Enrollment)
 admin.site.register(DummyEnrollment)
 admin.site.register(Eval)
 admin.site.register(EvalMarks)
+admin.site.register(TempCourseStudents)
