@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from .decorators import professor_required
-from base.models import Announcement, Course, Student, Enrollment
+from base.models import Announcement, Course, Student, Enrollment, EvalMarks
 from .models import *
 from .forms import StudentSearchForm, CourseForm, EvalForm
 from django.urls import reverse
@@ -117,12 +117,16 @@ def add_student_process(request, course_id, student_id):
 
     return redirect('add_student_to_course', course_id=course_id)
 
-
+@login_required
+@professor_required
 def remove_student_from_cart(request, course_id,cart_item_id):
     cart_item = get_object_or_404(TempCourseStudents, id=cart_item_id)
     cart_item.delete()
     return render(request, 'professor_portal/add_student_cart.html', {'course_id':course_id})
 
+
+@login_required
+@professor_required
 def add_students_to_course(request, course_id):
     if request.method == 'POST':
         course = get_object_or_404(Course, id=course_id)
@@ -141,13 +145,17 @@ def add_students_to_course(request, course_id):
         return redirect('add_student_cart', course_id=course_id)
 
 
+
+@login_required
+@professor_required
 def add_student_cart(request, course_id):
     course = get_object_or_404(Course,id = course_id)
     cart_items = TempCourseStudents.objects.all()
     return render(request, 'professor_portal/add_student_cart.html', {'course_id':course_id, 'cart_items': cart_items})
 
 
-
+@login_required
+@professor_required
 def create_eval(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     
@@ -162,3 +170,37 @@ def create_eval(request, course_id):
         form = EvalForm()
     
     return render(request, 'professor_portal/create_eval.html', {'form': form, 'course': course})
+
+
+
+@professor_required
+def evaluate_students(request):
+    students = Student.objects.all()
+    initial_marks = {}
+    if request.method == 'POST':
+        for student in students:
+            marks = request.POST.get(f"marks_{student.id}")
+            if marks == '':
+                marks = 0
+            initial_marks[student.id] = int(marks)
+         
+            eval_marks, created = EvalMarks.objects.get_or_create(enrollment__student=student)
+            eval_marks.marks = marks
+            eval_marks.save()
+    else:
+        for student in students:
+            initial_marks[student.id] = 0
+
+    return render(request, 'professor_portal/eval_marks.html', {'students': students, 'initial_marks': initial_marks})
+
+
+def save_eval_marks(request):
+    if request.method == 'POST':
+        for key, value in request.POST.items():
+            if key.startswith('marks_'):
+                student_id = key.split('_')[1]
+                marks = int(value)
+                eval_marks, created = EvalMarks.objects.get_or_create(enrollment__student_id=student_id)
+                eval_marks.marks = marks
+                eval_marks.save()
+    return redirect('evaluate_students') 

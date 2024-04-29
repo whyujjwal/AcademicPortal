@@ -17,5 +17,7 @@ urlpatterns = [
     path('create-announcement', views.announcement_view, name='announcement_view'),
     path('announcement/create/<int:course_id>/', views.create_announcement, name='create_announcement'),
     path('course/<int:course_id>/create-eval/', views.create_eval, name='create_eval'),
+    path('evaluate/', views.evaluate_students, name='evaluate_students'),
+    path('save_eval_marks/', views.save_eval_marks, name='save_eval_marks'),
 
 ]
