@@ -1,0 +1,22 @@
+{% extends 'professor_portal/prof_base.html' %}
+{% block title %}Evaluations - {{ course.name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Evaluations - {{ course.name }}</h1>
+    
+    {% if evals %}
+        <ul>
+            {% for eval in evals %}
+                <li>
+                    <p>{{ eval.name }}</p>
+                    <p>Maximum Marks: {{ eval.max_marks }}</p>
+                    <a href="{% url 'give_marks' eval.id %}" class="btn btn-primary">Give Marks</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No evaluations available for this course.</p>
+    {% endif %}
+</div>
+{% endblock %}

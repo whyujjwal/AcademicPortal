@@ -19,5 +19,7 @@ urlpatterns = [
     path('course/<int:course_id>/create-eval/', views.create_eval, name='create_eval'),
     path('evaluate/', views.evaluate_students, name='evaluate_students'),
     path('save_eval_marks/', views.save_eval_marks, name='save_eval_marks'),
+    path('course/<int:course_id>/evaluate/', views.evaluate_course, name='evaluate_course'),
+    path('eval/<int:eval_id>/give_marks/', views.give_marks, name='give_marks'),
 
 ]

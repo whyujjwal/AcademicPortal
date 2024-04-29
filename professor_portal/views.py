@@ -204,3 +204,14 @@ def save_eval_marks(request):
                 eval_marks.marks = marks
                 eval_marks.save()
     return redirect('evaluate_students') 
+
+
+
+def evaluate_course(request, course_id):
+    course = Course.objects.get(pk=course_id)
+    evals = Eval.objects.filter(course=course)
+    return render(request, 'professor_portal/evaluate_course.html', {'course': course, 'evals': evals})
+
+def give_marks(request, eval_id):
+    # Your logic for giving marks for a particular evaluation goes here
+    return redirect('evaluate_course', course_id=eval.course.id)
